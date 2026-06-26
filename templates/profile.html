@@ -1,0 +1,165 @@
+{% extends "index.html" %}
+{% block content %}
+
+<div class="profile-wrapper">
+
+  <!-- Avatar & Name -->
+  <div class="profile-header">
+    <div class="avatar">{{ user.username[0].upper() }}</div>
+    <h2>{{ user.username }}</h2>
+    <p class="country">📍 {{ user.country }}</p>
+    <p class="email">{{ user.email }}</p>
+  </div>
+
+  <!-- Stats Grid -->
+  <div class="stats-grid">
+
+    <div class="stat-card correct">
+      <div class="stat-icon">✅</div>
+      <div class="stat-value">{{ user.correct }}</div>
+      <div class="stat-label">Correct</div>
+    </div>
+
+    <div class="stat-card incorrect">
+      <div class="stat-icon">❌</div>
+      <div class="stat-value">{{ user.incorrect }}</div>
+      <div class="stat-label">Incorrect</div>
+    </div>
+
+    <div class="stat-card skipped">
+      <div class="stat-icon">⏭️</div>
+      <div class="stat-value">{{ user.skipped }}</div>
+      <div class="stat-label">Skipped</div>
+    </div>
+
+    <div class="stat-card avg-time">
+      <div class="stat-icon">⏱️</div>
+      <div class="stat-value">{{ "%.1f"|format(user.avg_time) }}s</div>
+      <div class="stat-label">Avg Time / Question</div>
+    </div>
+
+    <div class="stat-card iq">
+      <div class="stat-icon">🧠</div>
+      <div class="stat-value">{{ avg_iq }}</div>
+      <div class="stat-label">Avg IQ Score</div>
+    </div>
+
+    <div class="stat-card tests">
+      <div class="stat-icon">📝</div>
+      <div class="stat-value">{{ user.tests_taken }}</div>
+      <div class="stat-label">Tests Taken</div>
+    </div>
+
+  </div>
+
+  <!-- Progress Bar -->
+  {% if total_questions > 0 %}
+  <div class="accuracy-section">
+    <h3>Accuracy Breakdown</h3>
+    <div class="progress-bar-wrap">
+      <div class="bar correct-bar"
+           style="width: {{ (user.correct / total_questions * 100)|round(1) ~ '%' }}"
+           title="Correct: {{ (user.correct / total_questions * 100)|round(1) ~ '%' }}">
+        {{ (user.correct / total_questions * 100)|round(1) ~ '%' }}
+      </div>
+      <div class="bar incorrect-bar"
+           style="width: {{ ((user.incorrect / total_questions * 100)|round(1)) ~ '%' }}"
+           title="Incorrect: {{ ((user.incorrect / total_questions * 100)|round(1)) ~ '%' }}">
+        {{ ((user.incorrect / total_questions * 100)|round(1)) ~ '%' }}
+      </div>
+      <div class="bar skipped-bar"
+           style="width: {{ (user.skipped / total_questions * 100)|round(1) }}%"
+           title="Skipped: {{ (user.skipped / total_questions * 100)|round(1) }}%">
+        {{ (user.skipped / total_questions * 100)|round(1) }}%
+      </div>
+    </div>
+    <div class="bar-legend">
+      <span class="dot correct-dot"></span> Correct &nbsp;
+      <span class="dot incorrect-dot"></span> Incorrect &nbsp;
+      <span class="dot skipped-dot"></span> Skipped
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+
+<style>
+  .profile-wrapper {
+    max-width: 750px;
+    margin: 40px auto;
+    padding: 0 16px;
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  /* Header */
+  .profile-header {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+  .avatar {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6c63ff, #48c9b0);
+    color: #fff;
+    font-size: 2.2rem;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 14px;
+    box-shadow: 0 4px 16px rgba(108,99,255,0.35);
+  }
+  .profile-header h2 {
+    margin: 0; font-size: 1.6rem; color: #1a1a2e;
+  }
+  .profile-header .country, .profile-header .email {
+    margin: 4px 0; color: #666; font-size: 0.9rem;
+  }
+
+  /* Stats Grid */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 36px;
+  }
+  @media (max-width: 500px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .stat-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 22px 16px;
+    text-align: center;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    transition: transform 0.2s;
+  }
+  .stat-card:hover { transform: translateY(-4px); }
+
+  .stat-icon { font-size: 1.6rem; margin-bottom: 8px; }
+  .stat-value { font-size: 1.8rem; font-weight: 700; color: #1a1a2e; }
+  .stat-label { font-size: 0.78rem; color: #888; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  .correct   { border-top: 4px solid #2ecc71; }
+  .incorrect { border-top: 4px solid #e74c3c; }
+  .skipped   { border-top: 4px solid #f39c12; }
+  .avg-time  { border-top: 4px solid #3498db; }
+  .iq        { border-top: 4px solid #9b59b6; }
+  .tests     { border-top: 4px solid #1abc9c; }
+
+  /* Progress bar */
+  .accuracy-section { background: #fff; border-radius: 14px; padding: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+  .accuracy-section h3 { margin: 0 0 16px; font-size: 1rem; color: #444; }
+  .progress-bar-wrap { display: flex; height: 28px; border-radius: 8px; overflow: hidden; }
+  .bar { display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: #fff; font-weight: 600; min-width: 0; overflow: hidden; }
+  .correct-bar   { background: #2ecc71; }
+  .incorrect-bar { background: #e74c3c; }
+  .skipped-bar   { background: #f39c12; }
+
+  .bar-legend { margin-top: 10px; font-size: 0.82rem; color: #555; }
+  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 4px; }
+  .correct-dot   { background: #2ecc71; }
+  .incorrect-dot { background: #e74c3c; }
+  .skipped-dot   { background: #f39c12; }
+</style>
+
+{% endblock %}

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>IQ Test</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static',
+          filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="hero">
+
+<div class="glass-card">
+
+<h1>🧠 IQ Test</h1>
+
+<h2 id="question">
+Loading...
+</h2>
+
+<br>
+
+<div id="options">
+
+</div>
+
+<br>
+
+<p>
+⏱️ Time:
+<span id="timer">0</span> sec
+</p>
+
+<br>
+
+<button onclick="skipQuestion()"
+        class="btn2">
+Skip
+</button>
+
+</div>
+
+</div>
+
+<script src="{{ url_for('static',
+filename='js/quiz.js') }}"></script>
+
+</body>
+</html>

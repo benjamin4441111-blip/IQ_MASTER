@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IQ Master</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="stars"></div>
+
+<nav class="navbar">
+    <div class="logo">
+        🧠 IQ MASTER
+    </div>
+
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/leaderboard">Leaderboard</a></li>
+        <li><a href="/login">Login</a></li>
+        <li><a href="/register">Register</a></li>
+    </ul>
+</nav>
+
+<section class="hero">
+
+    <div class="glass-card">
+
+        <h1>Test Your Intelligence</h1>
+
+        <p>
+            Challenge your brain with logical,
+            mathematical and pattern recognition
+            questions and discover your IQ score.
+        </p>
+
+        <div class="buttons">
+
+            <a href="/quiz" class="btn">
+                Start Test
+            </a>
+
+            <a href="/leaderboard" class="btn2">
+                Leaderboard
+            </a>
+
+        </div>
+
+        <div class="stats">
+
+            <div class="box">
+                <h2>5000+</h2>
+                <span>Players</span>
+            </div>
+
+            <div class="box">
+                <h2>150+</h2>
+                <span>Questions</span>
+            </div>
+
+            <div class="box">
+                <h2>24/7</h2>
+                <span>Available</span>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<section class="features">
+
+    <div class="feature-card">
+        <h2>🧠 Real IQ Tests</h2>
+        <p>
+            Logical reasoning, patterns and
+            mathematics based questions.
+        </p>
+    </div>
+
+    <div class="feature-card">
+        <h2>📊 Dashboard</h2>
+        <p>
+            Track correct answers, mistakes,
+            average time and performance.
+        </p>
+    </div>
+
+    <div class="feature-card">
+        <h2>🏆 Global Ranking</h2>
+        <p>
+            Compete with players around
+            the world.
+        </p>
+    </div>
+
+</section>
+
+<footer>
+    © 2026 IQ MASTER | Powered by Flask
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>IQ Master Premium Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #0b1220;
+    color: white;
+}
+
+/* HEADER */
+.header {
+    text-align: center;
+    padding: 30px;
+}
+
+.header h1 {
+    font-size: 34px;
+    color: #38bdf8;
+}
+
+/* GRID */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.card {
+    background: #111a2e;
+    padding: 20px;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card h2 {
+    font-size: 30px;
+    color: #38bdf8;
+}
+
+/* IQ CARD */
+.iq-card {
+    margin: 20px;
+    padding: 40px;
+    border-radius: 20px;
+    background: linear-gradient(135deg,#38bdf8,#6366f1);
+    text-align: center;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+}
+
+.iq-card h1 {
+    font-size: 70px;
+    margin: 0;
+}
+
+/* CHART SECTION */
+.chart-container {
+    width: 90%;
+    margin: 40px auto;
+    background: #111a2e;
+    padding: 20px;
+    border-radius: 16px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <h1>IQ Master Premium Dashboard</h1>
+    <p>Your Cognitive Performance Analytics</p>
+</div>
+
+<!-- IQ SCORE -->
+<div class="iq-card">
+    <h1>{{ iq_score }}</h1>
+    <p>IQ-like Cognitive Score</p>
+</div>
+
+<!-- STATS -->
+<div class="grid">
+
+    <div class="card">
+        <h2>{{ correct }}</h2>
+        <p>Correct Answers</p>
+    </div>
+
+    <div class="card">
+        <h2>{{ incorrect }}</h2>
+        <p>Incorrect Answers</p>
+    </div>
+
+    <div class="card">
+        <h2>{{ skipped }}</h2>
+        <p>Skipped Questions</p>
+    </div>
+
+    <div class="card">
+        <h2>{{ accuracy }}%</h2>
+        <p>Accuracy</p>
+    </div>
+
+</div>
+
+<!-- CHARTS -->
+<div class="chart-container">
+    <h3>Performance Breakdown</h3>
+    <canvas id="pieChart"></canvas>
+</div>
+
+<div class="chart-container">
+    <h3>Score Analysis</h3>
+    <canvas id="barChart"></canvas>
+</div>
+
+<script>
+// Use unique JS variable names to avoid redeclaration errors when template variables
+const correctCountVar = Number("{{ correct }}");
+const incorrectCountVar = Number("{{ incorrect }}");
+const skippedCountVar = Number("{{ skipped }}");
+const iqScoreVar = Number("{{ iq_score }}");
+const accuracyRateVar = Number("{{ accuracy }}");
+
+/* PIE CHART */
+new Chart(document.getElementById('pieChart'), {
+    type: 'pie',
+    data: {
+        labels: ['Correct', 'Incorrect', 'Skipped'],
+        datasets: [{
+            data: [correctCountVar, incorrectCountVar, skippedCountVar],
+            backgroundColor: ['#22c55e', '#ef4444', '#f59e0b']
+        }]
+    }
+});
+
+/* BAR CHART */
+new Chart(document.getElementById('barChart'), {
+    type: 'bar',
+    data: {
+        labels: ['IQ Score', 'Correct', 'Accuracy'],
+        datasets: [{
+            label: 'Performance',
+            data: [iqScoreVar, correctCountVar, accuracyRateVar],
+            backgroundColor: ['#38bdf8', '#22c55e', '#6366f1']
+        }]
+    }
+});
+</script>
+
+</body>
+</html>
