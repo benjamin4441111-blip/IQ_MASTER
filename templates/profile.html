@@ -58,17 +58,17 @@
     <h3>Accuracy Breakdown</h3>
     <div class="progress-bar-wrap">
       <div class="bar correct-bar"
-           style="width: {{ (user.correct / total_questions * 100)|round(1) ~ '%' }}"
+           
            title="Correct: {{ (user.correct / total_questions * 100)|round(1) ~ '%' }}">
         {{ (user.correct / total_questions * 100)|round(1) ~ '%' }}
       </div>
       <div class="bar incorrect-bar"
-           style="width: {{ ((user.incorrect / total_questions * 100)|round(1)) ~ '%' }}"
+          
            title="Incorrect: {{ ((user.incorrect / total_questions * 100)|round(1)) ~ '%' }}">
         {{ ((user.incorrect / total_questions * 100)|round(1)) ~ '%' }}
       </div>
       <div class="bar skipped-bar"
-           style="width: {{ (user.skipped / total_questions * 100)|round(1) }}%"
+           
            title="Skipped: {{ (user.skipped / total_questions * 100)|round(1) }}%">
         {{ (user.skipped / total_questions * 100)|round(1) }}%
       </div>
