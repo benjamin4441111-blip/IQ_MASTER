@@ -222,9 +222,9 @@ def dashboard():
     skipped = current_user.skipped
 
     accuracy = round(
-    (correct / (correct + incorrect + skipped)) * 100,
+    (correct / (correct + incorrect + skipped)) * 100 if (correct + incorrect + skipped) > 0 else 0,
     2
-    )
+)
 
     iq_score = 80 + (correct * 2)
     
