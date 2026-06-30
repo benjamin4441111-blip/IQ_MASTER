@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 
 from flask_sqlalchemy import SQLAlchemy
 
@@ -300,7 +300,7 @@ def save_score():
         'avg_time': avg_time,
         'iq_score': iq_score
     }
-    
+
     return redirect(url_for("dashboard"))
 
 
