@@ -368,9 +368,14 @@ def profile():
 with app.app_context():
     db.create_all()
 
+    from sqlalchemy import text
+    try:
+        db.session.execute(text('ALTER TABLE "user" ADD COLUMN tests_taken INTEGER DEFAULT 0'))
+        db.session.commit()
+        print("tests_taken column added successfully")
+    except Exception as e:
+        db.session.rollback()
+        print("Column might already exist:", e)
+
 if __name__ == "__main__":
-
-    
-
-
     app.run(debug=True)
