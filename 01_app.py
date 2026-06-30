@@ -358,6 +358,30 @@ def profile():
                            skipped_pct=skipped_pct)
 
 
+# ================
+
+# debug column
+
+#=================
+
+@app.route('/debug_columns')
+def debug_columns():
+    from sqlalchemy import inspect
+    inspector = inspect(db.engine)
+    columns = [col['name'] for col in inspector.get_columns('user')]
+    return {"columns": columns}
+
+
+
+
+
+
+
+
+
+
+
+
 
 # =======================
 
