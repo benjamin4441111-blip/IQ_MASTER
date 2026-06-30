@@ -215,28 +215,33 @@ def login():
 
 
 @app.route("/dashboard")
+@login_required
 def dashboard():
+    recent = session.get('recent', {
+        'correct': 0,
+        'incorrect': 0,
+        'skipped': 0,
+        'avg_time': 0,
+        'iq_score': 0
+    })
 
-    correct = current_user.correct
-    incorrect = current_user.incorrect
-    skipped = current_user.skipped
+    correct = recent['correct']
+    incorrect = recent['incorrect']
+    skipped = recent['skipped']
 
     accuracy = round(
-    (correct / (correct + incorrect + skipped)) * 100 if (correct + incorrect + skipped) > 0 else 0,
-    2
-)
-
-    iq_score = 80 + (correct * 2)
-    
-    return render_template(
-       "dashboard.html",
-       correct=correct,
-       incorrect=incorrect,
-       skipped=skipped,
-       accuracy=accuracy,
-       iq_score=iq_score
+        (correct / (correct + incorrect + skipped)) * 100 if (correct + incorrect + skipped) > 0 else 0,
+        2
     )
 
+    return render_template(
+        "dashboard.html",
+        correct=correct,
+        incorrect=incorrect,
+        skipped=skipped,
+        accuracy=accuracy,
+        iq_score=recent['iq_score']
+    )
 
   
 
@@ -286,6 +291,16 @@ def save_score():
     current_user.tests_taken += 1
 
     db.session.commit()
+
+     # Save THIS test's result separately (for dashboard)
+    session['recent'] = {
+        'correct': correct,
+        'incorrect': incorrect,
+        'skipped': skipped,
+        'avg_time': avg_time,
+        'iq_score': iq_score
+    }
+    
     return redirect(url_for("dashboard"))
 
 
