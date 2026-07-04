@@ -197,7 +197,7 @@ def login():
 
             login_user(user)
 
-            return redirect(url_for("home"))
+            return redirect(url_for("home_page"))
 
 
         flash("Invalid email or password")
