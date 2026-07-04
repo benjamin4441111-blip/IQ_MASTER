@@ -105,7 +105,7 @@ def load_user(user_id):
 
 @app.route("/")
 
-def home():
+def home_page():
 
     return render_template("index.html")
 
@@ -406,7 +406,7 @@ def home():
 def logout():
     from flask_login import logout_user
     logout_user()
-    return redirect(url_for("index"))
+    return redirect(url_for("index.html"))
 
 
 
