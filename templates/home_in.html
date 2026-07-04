@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IQ Master — Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #050818;
+            --surface: rgba(255,255,255,0.04);
+            --surface2: rgba(255,255,255,0.07);
+            --border: rgba(255,255,255,0.08);
+            --cyan: #00e5ff;
+            --violet: #7c3aed;
+            --green: #10b981;
+            --red: #ef4444;
+            --yellow: #f59e0b;
+            --text: #e2e8f0;
+            --muted: #64748b;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Space Grotesk', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            z-index: 0;
+        }
+
+        .bg-glow {
+            position: fixed;
+            width: 500px; height: 500px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.1;
+            z-index: 0;
+        }
+        .bg-glow-1 { background: var(--cyan); top: -100px; right: -100px; }
+        .bg-glow-2 { background: var(--violet); bottom: -100px; left: -100px; }
+
+        /* Navbar */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            padding: 16px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(5,8,24,0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo-dot {
+            width: 9px; height: 9px;
+            background: var(--cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--cyan);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.4); }
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .nav-right a {
+            text-decoration: none;
+            color: var(--muted);
+            font-size: 0.9rem;
+            padding: 8px 14px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .nav-right a:hover { color: var(--text); background: var(--surface); }
+
+        .avatar {
+            width: 36px; height: 36px;
+            background: linear-gradient(135deg, var(--cyan), var(--violet));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: white;
+            margin-left: 8px;
+        }
+
+        .btn-logout {
+            color: var(--muted) !important;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+        .btn-logout:hover { color: var(--red) !important; border-color: var(--red) !important; background: rgba(239,68,68,0.05) !important; }
+
+        /* Main content */
+        main {
+            position: relative;
+            z-index: 1;
+            padding: 100px 24px 60px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* Welcome section */
+        .welcome {
+            margin-bottom: 48px;
+        }
+        .welcome-time {
+            font-size: 0.8rem;
+            color: var(--cyan);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+        }
+        .welcome h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+        }
+        .welcome p { color: var(--muted); font-size: 1rem; }
+
+        /* Start test card — hero card */
+        .start-card {
+            background: linear-gradient(135deg, rgba(0,229,255,0.12), rgba(124,58,237,0.12));
+            border: 1px solid rgba(0,229,255,0.2);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 24px;
+            flex-wrap: wrap;
+            position: relative;
+            overflow: hidden;
+        }
+        .start-card::before {
+            content: '🧠';
+            position: absolute;
+            right: -10px;
+            top: -20px;
+            font-size: 8rem;
+            opacity: 0.07;
+        }
+
+        .start-card-text h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+        .start-card-text p { color: var(--muted); font-size: 0.95rem; line-height: 1.6; max-width: 400px; }
+
+        .btn-start {
+            background: var(--cyan);
+            color: var(--bg);
+            border: none;
+            padding: 16px 40px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+            box-shadow: 0 0 30px rgba(0,229,255,0.3);
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .btn-start:hover { transform: translateY(-2px); box-shadow: 0 0 50px rgba(0,229,255,0.5); }
+
+        /* Stats grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.2s;
+        }
+        .stat-card:hover { border-color: rgba(255,255,255,0.12); transform: translateY(-2px); }
+
+        .stat-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+        .stat-value {
+            font-family: 'Syne', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+        .stat-sub { font-size: 0.8rem; color: var(--muted); }
+
+        .stat-cyan { color: var(--cyan); }
+        .stat-green { color: var(--green); }
+        .stat-red { color: var(--red); }
+        .stat-yellow { color: var(--yellow); }
+
+        /* Bottom cards */
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .action-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            text-decoration: none;
+            color: var(--text);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .action-card:hover { border-color: rgba(0,229,255,0.2); transform: translateY(-3px); background: var(--surface2); }
+
+        .action-icon {
+            width: 52px; height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+        .icon-cyan { background: rgba(0,229,255,0.1); }
+        .icon-violet { background: rgba(124,58,237,0.1); }
+        .icon-yellow { background: rgba(245,158,11,0.1); }
+
+        .action-text h3 { font-size: 1rem; font-weight: 600; margin-bottom: 4px; }
+        .action-text p { font-size: 0.85rem; color: var(--muted); }
+
+        .action-arrow {
+            margin-left: auto;
+            color: var(--muted);
+            font-size: 1.2rem;
+            transition: transform 0.2s;
+        }
+        .action-card:hover .action-arrow { transform: translateX(4px); color: var(--cyan); }
+
+        @media (max-width: 600px) {
+            nav { padding: 14px 16px; }
+            main { padding: 80px 16px 40px; }
+            .start-card { padding: 28px 24px; }
+            .btn-start { width: 100%; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-glow bg-glow-1"></div>
+<div class="bg-glow bg-glow-2"></div>
+
+<!-- Navbar -->
+<nav>
+    <div class="logo">
+        <div class="logo-dot"></div>
+        IQ MASTER
+    </div>
+    <div class="nav-right">
+        <a href="/leaderboard">Leaderboard</a>
+        <a href="/profile">Profile</a>
+        <a href="/logout" class="btn-logout">Logout</a>
+        <div class="avatar">{{ user.username[0].upper() }}</div>
+    </div>
+</nav>
+
+<!-- Main -->
+<main>
+
+    <!-- Welcome -->
+    <div class="welcome">
+        <div class="welcome-time" id="greeting">Good morning</div>
+        <h1>Welcome back, <span style="color: var(--cyan)">{{ user.username }}</span>! 👋</h1>
+        <p>Ready to challenge your mind today?</p>
+    </div>
+
+    <!-- Start Test -->
+    <div class="start-card">
+        <div class="start-card-text">
+            <h2>Take an IQ Test</h2>
+            <p>20 questions · ~10 minutes · Instant results. Test your logical reasoning, patterns and mathematics.</p>
+        </div>
+        <a href="/quiz" class="btn-start">Start Test →</a>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-label">IQ Score</div>
+            <div class="stat-value stat-cyan">{{ user.iq_score if user.iq_score else '—' }}</div>
+            <div class="stat-sub">All time total</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Tests Taken</div>
+            <div class="stat-value stat-yellow">{{ user.tests_taken if user.tests_taken else 0 }}</div>
+            <div class="stat-sub">Total attempts</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Correct</div>
+            <div class="stat-value stat-green">{{ user.correct if user.correct else 0 }}</div>
+            <div class="stat-sub">All time</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Incorrect</div>
+            <div class="stat-value stat-red">{{ user.incorrect if user.incorrect else 0 }}</div>
+            <div class="stat-sub">All time</div>
+        </div>
+    </div>
+
+    <!-- Quick actions -->
+    <div class="bottom-grid">
+        <a href="/profile" class="action-card">
+            <div class="action-icon icon-cyan">📊</div>
+            <div class="action-text">
+                <h3>My Profile</h3>
+                <p>View detailed stats and full progress history</p>
+            </div>
+            <div class="action-arrow">→</div>
+        </a>
+        <a href="/leaderboard" class="action-card">
+            <div class="action-icon icon-yellow">🏆</div>
+            <div class="action-text">
+                <h3>Leaderboard</h3>
+                <p>See how you rank against other players</p>
+            </div>
+            <div class="action-arrow">→</div>
+        </a>
+        <a href="/dashboard" class="action-card">
+            <div class="action-icon icon-violet">⚡</div>
+            <div class="action-text">
+                <h3>Last Result</h3>
+                <p>View your most recent test results</p>
+            </div>
+            <div class="action-arrow">→</div>
+        </a>
+    </div>
+
+</main>
+
+<script>
+    // Dynamic greeting
+    const hour = new Date().getHours();
+    const greetEl = document.getElementById('greeting');
+    if (hour < 12) greetEl.textContent = '☀️ Good morning';
+    else if (hour < 17) greetEl.textContent = '👋 Good afternoon';
+    else greetEl.textContent = '🌙 Good evening';
+</script>
+
+</body>
+</html>

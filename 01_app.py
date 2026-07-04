@@ -337,16 +337,12 @@ def leaderboard():
 
 # =======================
 
-
 @app.route("/logout")
-
 @login_required
-
 def logout():
-
+    from flask_login import logout_user
     logout_user()
-
-    return redirect(url_for("home"))
+    return redirect(url_for("index.html"))
 
 
 
@@ -398,15 +394,10 @@ def debug_columns():
 
 @app.route("/home")
 @login_required
-def home():
+def home_inside():
     return render_template("home.html", user=current_user)
 
-@app.route("/logout")
-@login_required
-def logout():
-    from flask_login import logout_user
-    logout_user()
-    return redirect(url_for("index.html"))
+
 
 
 
