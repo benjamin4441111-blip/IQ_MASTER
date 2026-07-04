@@ -359,7 +359,7 @@ def logout():
 @login_required
 def profile():
     user = current_user
-    avg_iq = round(user.iq_score / user.tests_taken, 1) if (user.tests_taken and user.tests_taken > 0) else 0
+    avg_iq = round(user.iq_score / user.tests_taken, 1) if (user.tests_taken is not None and user.tests_taken > 0) else 0
     total_questions = user.correct + user.incorrect + user.skipped
     correct_pct = round(user.correct / total_questions * 100, 1) if total_questions else 0
     incorrect_pct = round(user.incorrect / total_questions * 100, 1) if total_questions else 0
