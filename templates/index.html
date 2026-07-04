@@ -3,108 +3,462 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IQ Master</title>
+    <title>IQ Master — Test Your Intelligence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+        :root {
+            --bg: #050818;
+            --surface: rgba(255,255,255,0.04);
+            --border: rgba(255,255,255,0.08);
+            --cyan: #00e5ff;
+            --violet: #7c3aed;
+            --text: #e2e8f0;
+            --muted: #64748b;
+        }
 
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Space Grotesk', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            z-index: 0;
+        }
+
+        .bg-glow {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.15;
+            z-index: 0;
+        }
+        .bg-glow-1 { background: var(--cyan); top: -200px; left: -100px; }
+        .bg-glow-2 { background: var(--violet); bottom: -200px; right: -100px; }
+
+        /* Floating particles */
+        .particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--cyan);
+            border-radius: 50%;
+            animation: float linear infinite;
+            opacity: 0;
+        }
+        @keyframes float {
+            0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(-100px) translateX(100px); opacity: 0; }
+        }
+
+        /* Navbar */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(5,8,24,0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo-dot {
+            width: 10px; height: 10px;
+            background: var(--cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 12px var(--cyan);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.4); opacity: 0.7; }
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 8px;
+            list-style: none;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: var(--muted);
+            font-size: 0.9rem;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .nav-links a:hover { color: var(--text); background: var(--surface); }
+        .nav-links .btn-nav {
+            color: var(--bg);
+            background: var(--cyan);
+            font-weight: 600;
+        }
+        .nav-links .btn-nav:hover { background: #00c4e0; }
+
+        /* Hero */
+        .hero {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 100px 24px 60px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0,229,255,0.1);
+            border: 1px solid rgba(0,229,255,0.2);
+            border-radius: 100px;
+            padding: 6px 16px;
+            font-size: 0.8rem;
+            color: var(--cyan);
+            margin-bottom: 32px;
+            letter-spacing: 0.5px;
+        }
+        .hero-badge span { width: 6px; height: 6px; background: var(--cyan); border-radius: 50%; animation: pulse 2s infinite; }
+
+        h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 800;
+            line-height: 1.0;
+            letter-spacing: -2px;
+            margin-bottom: 24px;
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, var(--cyan) 0%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-sub {
+            font-size: 1.1rem;
+            color: var(--muted);
+            max-width: 480px;
+            line-height: 1.7;
+            margin-bottom: 48px;
+        }
+
+        .hero-btns {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 80px;
+        }
+
+        .btn-primary {
+            background: var(--cyan);
+            color: var(--bg);
+            border: none;
+            padding: 16px 36px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+            box-shadow: 0 0 30px rgba(0,229,255,0.3);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 50px rgba(0,229,255,0.5); }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 16px 36px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: 'Space Grotesk', sans-serif;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .btn-secondary:hover { border-color: rgba(255,255,255,0.2); background: var(--surface); transform: translateY(-2px); }
+
+        /* Stats */
+        .stats {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .stat {
+            text-align: center;
+        }
+        .stat-num {
+            font-family: 'Syne', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--cyan);
+        }
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .stat-divider {
+            width: 1px;
+            background: var(--border);
+            align-self: stretch;
+        }
+
+        /* Features */
+        .features {
+            position: relative;
+            z-index: 1;
+            padding: 80px 24px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .section-label {
+            text-align: center;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--cyan);
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            text-align: center;
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 800;
+            margin-bottom: 60px;
+            letter-spacing: -1px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .feature-card:hover { border-color: rgba(0,229,255,0.2); transform: translateY(-4px); }
+        .feature-card:hover::before { opacity: 1; }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 16px;
+        }
+        .feature-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .feature-card p {
+            font-size: 0.9rem;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        /* CTA */
+        .cta {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 80px 24px;
+        }
+        .cta-box {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--surface);
+            border: 1px solid rgba(0,229,255,0.15);
+            border-radius: 24px;
+            padding: 60px 40px;
+        }
+        .cta h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 16px;
+            letter-spacing: -1px;
+        }
+        .cta p { color: var(--muted); margin-bottom: 32px; line-height: 1.6; }
+
+        footer {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 32px;
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 600px) {
+            nav { padding: 16px 20px; }
+            .nav-links a { padding: 6px 12px; font-size: 0.85rem; }
+            .hero-btns { flex-direction: column; align-items: center; }
+            .btn-primary, .btn-secondary { width: 100%; max-width: 280px; text-align: center; }
+        }
+    </style>
 </head>
 <body>
 
-<div class="stars"></div>
+<div class="bg-grid"></div>
+<div class="bg-glow bg-glow-1"></div>
+<div class="bg-glow bg-glow-2"></div>
 
-<nav class="navbar">
+<!-- Particles -->
+<div class="particles" id="particles"></div>
+
+<!-- Navbar -->
+<nav>
     <div class="logo">
-        🧠 IQ MASTER
+        <div class="logo-dot"></div>
+        IQ MASTER
     </div>
-
-    <ul>
-       <li><a href="/">Home</a></li>
-       <li><a href="/leaderboard">Leaderboard</a></li>
-       <li><a href="/profile">Profile</a></li>
-       <li><a href="/login">Login</a></li>
-       <li><a href="/register">Register</a></li>
+    <ul class="nav-links">
+        <li><a href="/leaderboard">Leaderboard</a></li>
+        <li><a href="/login">Login</a></li>
+        <li><a href="/register" class="btn-nav">Get Started</a></li>
     </ul>
 </nav>
 
+<!-- Hero -->
 <section class="hero">
-
-    <div class="glass-card">
-
-        <h1>Test Your Intelligence</h1>
-
-        <p>
-            Challenge your brain with logical,
-            mathematical and pattern recognition
-            questions and discover your IQ score.
-        </p>
-
-        <div class="buttons">
-
-            <a href="/quiz" class="btn">
-                Start Test
-            </a>
-
-            <a href="/leaderboard" class="btn2">
-                Leaderboard
-            </a>
-
-        </div>
-
-        <div class="stats">
-
-            <div class="box">
-                <h2>5000+</h2>
-                <span>Players</span>
-            </div>
-
-            <div class="box">
-                <h2>150+</h2>
-                <span>Questions</span>
-            </div>
-
-            <div class="box">
-                <h2>24/7</h2>
-                <span>Available</span>
-            </div>
-
-        </div>
-
+    <div class="hero-badge">
+        <span></span>
+        Trusted by 5,000+ players worldwide
     </div>
 
+    <h1>Test Your<br><span class="gradient-text">Intelligence</span></h1>
+
+    <p class="hero-sub">
+        Challenge your brain with logical, mathematical and pattern recognition questions. Discover your true IQ score.
+    </p>
+
+    <div class="hero-btns">
+        <a href="/register" class="btn-primary">Start for Free →</a>
+        <a href="/leaderboard" class="btn-secondary">View Leaderboard</a>
+    </div>
+
+    <div class="stats">
+        <div class="stat">
+            <div class="stat-num">5K+</div>
+            <div class="stat-label">Players</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+            <div class="stat-num">150+</div>
+            <div class="stat-label">Questions</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+            <div class="stat-num">24/7</div>
+            <div class="stat-label">Available</div>
+        </div>
+    </div>
 </section>
 
+<!-- Features -->
 <section class="features">
+    <p class="section-label">Why IQ Master</p>
+    <h2 class="section-title">Everything you need to<br>measure your mind</h2>
 
-    <div class="feature-card">
-        <h2>🧠 Real IQ Tests</h2>
-        <p>
-            Logical reasoning, patterns and
-            mathematics based questions.
-        </p>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">🧠</div>
+            <h3>Real IQ Tests</h3>
+            <p>Scientifically designed questions covering logical reasoning, patterns, and mathematics.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>Track Progress</h3>
+            <p>Detailed stats on every test — accuracy, average time, IQ score history and more.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🏆</div>
+            <h3>Global Ranking</h3>
+            <p>Compete with players around the world and climb the leaderboard.</p>
+        </div>
     </div>
+</section>
 
-    <div class="feature-card">
-        <h2>📊 Dashboard</h2>
-        <p>
-            Track correct answers, mistakes,
-            average time and performance.
-        </p>
+<!-- CTA -->
+<section class="cta">
+    <div class="cta-box">
+        <h2>Ready to find your IQ?</h2>
+        <p>Join thousands of players already testing their intelligence on IQ Master. Free to play, always.</p>
+        <a href="/register" class="btn-primary">Create Free Account →</a>
     </div>
-
-    <div class="feature-card">
-        <h2>🏆 Global Ranking</h2>
-        <p>
-            Compete with players around
-            the world.
-        </p>
-    </div>
-
 </section>
 
 <footer>
-    © 2026 IQ MASTER | Powered by Flask
+    © 2026 IQ Master. Built with 🧠 and Flask.
 </footer>
 
+<script>
+    // Generate floating particles
+    const container = document.getElementById('particles');
+    for (let i = 0; i < 30; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.left = Math.random() * 100 + 'vw';
+        p.style.animationDuration = (8 + Math.random() * 12) + 's';
+        p.style.animationDelay = (Math.random() * 10) + 's';
+        p.style.width = p.style.height = (1 + Math.random() * 2) + 'px';
+        container.appendChild(p);
+    }
+</script>
 </body>
 </html>

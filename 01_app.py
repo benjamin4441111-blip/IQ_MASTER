@@ -197,7 +197,7 @@ def login():
 
             login_user(user)
 
-            return redirect(url_for("dashboard"))
+            return redirect(url_for("home"))
 
 
         flash("Invalid email or password")
@@ -386,6 +386,27 @@ def debug_columns():
     columns = [col['name'] for col in inspector.get_columns('user')]
     return {"columns": columns}
 
+
+
+
+
+#==============
+
+#HOME
+
+#==============
+
+@app.route("/home")
+@login_required
+def home():
+    return render_template("home.html", user=current_user)
+
+@app.route("/logout")
+@login_required
+def logout():
+    from flask_login import logout_user
+    logout_user()
+    return redirect(url_for("index"))
 
 
 
