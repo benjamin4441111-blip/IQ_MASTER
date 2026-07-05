@@ -1,173 +1,506 @@
-{% extends "index.html" %}
-{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IQ Master — Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-<div class="profile-wrapper">
-
-  <!-- Avatar & Name -->
-  <div class="profile-header">
-    <div class="avatar">{{ user.username[0].upper() }}</div>
-    <h2>{{ user.username }}</h2>
-    <p class="country">📍 {{ user.country }}</p>
-    <p class="email">{{ user.email }}</p>
-  </div>
-
-  <!-- Stats Grid -->
-  <div class="stats-grid">
-
-    <div class="stat-card correct">
-      <div class="stat-icon">✅</div>
-      <div class="stat-value">{{ user.correct }}</div>
-      <div class="stat-label">Correct</div>
-    </div>
-
-    <div class="stat-card incorrect">
-      <div class="stat-icon">❌</div>
-      <div class="stat-value">{{ user.incorrect }}</div>
-      <div class="stat-label">Incorrect</div>
-    </div>
-
-    <div class="stat-card skipped">
-      <div class="stat-icon">⏭️</div>
-      <div class="stat-value">{{ user.skipped }}</div>
-      <div class="stat-label">Skipped</div>
-    </div>
-
-    <div class="stat-card avg-time">
-      <div class="stat-icon">⏱️</div>
-      <div class="stat-value">{{ "%.1f"|format(user.avg_time) }}s</div>
-      <div class="stat-label">Avg Time / Question</div>
-    </div>
-
-    <div class="stat-card iq">
-      <div class="stat-icon">🧠</div>
-      <div class="stat-value">{{ avg_iq }}</div>
-      <div class="stat-label">Avg IQ Score</div>
-    </div>
-
-    <div class="stat-card tests">
-      <div class="stat-icon">📝</div>
-      <div class="stat-value">{{ user.tests_taken }}</div>
-      <div class="stat-label">Tests Taken</div>
-    </div>
-
-  </div>
-
-  <!-- Progress Bar -->
-  {% if total_questions > 0 %}
-  <div class="accuracy-section">
-    <h3>Accuracy Breakdown</h3>
-    <div class="progress-bar-wrap">
-      <div class="bar correct-bar"
-           data-width="{{ (user.correct / total_questions * 100)|round(1) }}"
-           title="Correct: {{ (user.correct / total_questions * 100)|round(1) }}%">
-        {{ (user.correct / total_questions * 100)|round(1) }}%
-      </div>
-      <div class="bar incorrect-bar"
-           data-width="{{ (user.incorrect / total_questions * 100)|round(1) }}"
-           title="Incorrect: {{ (user.incorrect / total_questions * 100)|round(1) }}%">
-        {{ (user.incorrect / total_questions * 100)|round(1) }}%
-      </div>
-      <div class="bar skipped-bar"
-           data-width="{{ (user.skipped / total_questions * 100)|round(1) }}"
-           title="Skipped: {{ (user.skipped / total_questions * 100)|round(1) }}%">
-        {{ (user.skipped / total_questions * 100)|round(1) }}%
-      </div>
-    </div>
-    <div class="bar-legend">
-      <span class="dot correct-dot"></span> Correct &nbsp;
-      <span class="dot incorrect-dot"></span> Incorrect &nbsp;
-      <span class="dot skipped-dot"></span> Skipped
-    </div>
-    <script>
-      document.querySelectorAll('.bar[data-width]').forEach(function (bar) {
-        const width = parseFloat(bar.getAttribute('data-width'));
-        if (!Number.isNaN(width)) {
-          bar.style.width = width + '%';
+        :root {
+            --bg: #050818;
+            --surface: rgba(255,255,255,0.04);
+            --surface2: rgba(255,255,255,0.07);
+            --border: rgba(255,255,255,0.08);
+            --cyan: #00e5ff;
+            --violet: #7c3aed;
+            --green: #10b981;
+            --red: #ef4444;
+            --yellow: #f59e0b;
+            --blue: #3b82f6;
+            --text: #e2e8f0;
+            --muted: #64748b;
         }
-      });
-    </script>
-  </div>
-  {% endif %}
 
-</div>
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Space Grotesk', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
 
-<style>
-  .profile-wrapper {
-    max-width: 750px;
-    margin: 40px auto;
-    padding: 0 16px;
-    font-family: 'Segoe UI', sans-serif;
-  }
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            z-index: 0;
+        }
 
-  /* Header */
-  .profile-header {
-    text-align: center;
-    margin-bottom: 36px;
-  }
-  .avatar {
-    width: 80px; height: 80px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #6c63ff, #48c9b0);
-    color: #fff;
-    font-size: 2.2rem;
-    font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 14px;
-    box-shadow: 0 4px 16px rgba(108,99,255,0.35);
-  }
-  .profile-header h2 {
-    margin: 0; font-size: 1.6rem; color: #1a1a2e;
-  }
-  .profile-header .country, .profile-header .email {
-    margin: 4px 0; color: #666; font-size: 0.9rem;
-  }
+        .bg-glow {
+            position: fixed;
+            width: 500px; height: 500px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.1;
+            z-index: 0;
+        }
+        .bg-glow-1 { background: var(--cyan); top: -100px; right: -100px; }
+        .bg-glow-2 { background: var(--violet); bottom: -100px; left: -100px; }
 
-  /* Stats Grid */
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-    margin-bottom: 36px;
-  }
-  @media (max-width: 500px) {
-    .stats-grid { grid-template-columns: repeat(2, 1fr); }
-  }
+        /* Navbar */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            padding: 16px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(5,8,24,0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
 
-  .stat-card {
-    background: #fff;
-    border-radius: 14px;
-    padding: 22px 16px;
-    text-align: center;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-    transition: transform 0.2s;
-  }
-  .stat-card:hover { transform: translateY(-4px); }
+        .logo {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text);
+        }
+        .logo-dot {
+            width: 9px; height: 9px;
+            background: var(--cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--cyan);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.4); }
+        }
 
-  .stat-icon { font-size: 1.6rem; margin-bottom: 8px; }
-  .stat-value { font-size: 1.8rem; font-weight: 700; color: #1a1a2e; }
-  .stat-label { font-size: 0.78rem; color: #888; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .nav-right a {
+            text-decoration: none;
+            color: var(--muted);
+            font-size: 0.9rem;
+            padding: 8px 14px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .nav-right a:hover { color: var(--text); background: var(--surface); }
+        .btn-logout {
+            border: 1px solid var(--border) !important;
+        }
+        .btn-logout:hover { color: var(--red) !important; border-color: var(--red) !important; background: rgba(239,68,68,0.05) !important; }
 
-  .correct   { border-top: 4px solid #2ecc71; }
-  .incorrect { border-top: 4px solid #e74c3c; }
-  .skipped   { border-top: 4px solid #f39c12; }
-  .avg-time  { border-top: 4px solid #3498db; }
-  .iq        { border-top: 4px solid #9b59b6; }
-  .tests     { border-top: 4px solid #1abc9c; }
+        .avatar-nav {
+            width: 36px; height: 36px;
+            background: linear-gradient(135deg, var(--cyan), var(--violet));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: white;
+            margin-left: 8px;
+        }
 
-  /* Progress bar */
-  .accuracy-section { background: #fff; border-radius: 14px; padding: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
-  .accuracy-section h3 { margin: 0 0 16px; font-size: 1rem; color: #444; }
-  .progress-bar-wrap { display: flex; height: 28px; border-radius: 8px; overflow: hidden; }
-  .bar { display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: #fff; font-weight: 600; min-width: 0; overflow: hidden; }
-  .correct-bar   { background: #2ecc71; }
-  .incorrect-bar { background: #e74c3c; }
-  .skipped-bar   { background: #f39c12; }
+        /* Main */
+        main {
+            position: relative;
+            z-index: 1;
+            padding: 100px 24px 60px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
 
-  .bar-legend { margin-top: 10px; font-size: 0.82rem; color: #555; }
-  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 4px; }
-  .correct-dot   { background: #2ecc71; }
-  .incorrect-dot { background: #e74c3c; }
-  .skipped-dot   { background: #f39c12; }
-</style>
+        /* Back button */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 32px;
+            transition: color 0.2s;
+        }
+        .back-btn:hover { color: var(--cyan); }
 
-{% endblock %}
+        /* Profile header */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 40px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            flex-wrap: wrap;
+        }
+
+        .avatar-big {
+            width: 80px; height: 80px;
+            background: linear-gradient(135deg, var(--cyan), var(--violet));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Syne', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            color: white;
+            flex-shrink: 0;
+            box-shadow: 0 0 30px rgba(0,229,255,0.2);
+        }
+
+        .profile-info h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+        }
+
+        .profile-meta {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+
+        .iq-badge {
+            margin-left: auto;
+            text-align: center;
+            background: rgba(0,229,255,0.08);
+            border: 1px solid rgba(0,229,255,0.15);
+            border-radius: 16px;
+            padding: 20px 32px;
+        }
+        .iq-badge-num {
+            font-family: 'Syne', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--cyan);
+            line-height: 1;
+        }
+        .iq-badge-label {
+            font-size: 0.75rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 4px;
+        }
+
+        /* Section title */
+        .section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--muted);
+            margin-bottom: 16px;
+        }
+
+        /* Stats grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px 20px;
+            text-align: center;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 3px;
+        }
+        .stat-card.green::after { background: var(--green); }
+        .stat-card.red::after { background: var(--red); }
+        .stat-card.yellow::after { background: var(--yellow); }
+        .stat-card.blue::after { background: var(--blue); }
+        .stat-card.violet::after { background: var(--violet); }
+        .stat-card.cyan::after { background: var(--cyan); }
+
+        .stat-card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.12); }
+
+        .stat-icon { font-size: 1.5rem; margin-bottom: 10px; }
+        .stat-value {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+        .stat-card.green .stat-value { color: var(--green); }
+        .stat-card.red .stat-value { color: var(--red); }
+        .stat-card.yellow .stat-value { color: var(--yellow); }
+        .stat-card.blue .stat-value { color: var(--blue); }
+        .stat-card.violet .stat-value { color: var(--violet); }
+        .stat-card.cyan .stat-value { color: var(--cyan); }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Progress bar */
+        .progress-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 32px;
+        }
+
+        .progress-section h3 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+        }
+
+        .progress-bar-wrap {
+            height: 32px;
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            margin-bottom: 16px;
+            background: rgba(255,255,255,0.05);
+        }
+
+        .bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            color: white;
+            font-weight: 600;
+            min-width: 0;
+            overflow: hidden;
+            transition: width 1s ease;
+        }
+        .correct-bar { background: var(--green); }
+        .incorrect-bar { background: var(--red); }
+        .skipped-bar { background: var(--yellow); }
+
+        .bar-legend {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+        .dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+        }
+        .correct-dot { background: var(--green); }
+        .incorrect-dot { background: var(--red); }
+        .skipped-dot { background: var(--yellow); }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 60px 24px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+        }
+        .empty-state .emoji { font-size: 3rem; margin-bottom: 16px; }
+        .empty-state h3 { font-size: 1.2rem; margin-bottom: 8px; }
+        .empty-state p { color: var(--muted); margin-bottom: 24px; }
+        .btn-start {
+            background: var(--cyan);
+            color: var(--bg);
+            border: none;
+            padding: 14px 32px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .btn-start:hover { transform: translateY(-2px); box-shadow: 0 0 30px rgba(0,229,255,0.3); }
+
+        @media (max-width: 600px) {
+            nav { padding: 14px 16px; }
+            main { padding: 80px 16px 40px; }
+            .profile-header { padding: 24px; }
+            .iq-badge { margin-left: 0; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-glow bg-glow-1"></div>
+<div class="bg-glow bg-glow-2"></div>
+
+<!-- Navbar -->
+<nav>
+    <a href="/home" class="logo">
+        <div class="logo-dot"></div>
+        IQ MASTER
+    </a>
+    <div class="nav-right">
+        <a href="/logout" class="btn-logout">Logout</a>
+        <div class="avatar-nav">{{ user.username[0].upper() }}</div>
+    </div>
+</nav>
+
+<main>
+
+    <a href="/home" class="back-btn">← Back to Home</a>
+
+    <!-- Profile Header -->
+    <div class="profile-header">
+        <div class="avatar-big">{{ user.username[0].upper() }}</div>
+        <div class="profile-info">
+            <h1>{{ user.username }}</h1>
+            <div class="profile-meta">
+                <div class="meta-item">📍 {{ user.country }}</div>
+                <div class="meta-item">✉️ {{ user.email }}</div>
+            </div>
+        </div>
+        <div class="iq-badge">
+            <div class="iq-badge-num">{{ avg_iq }}</div>
+            <div class="iq-badge-label">Avg IQ Score</div>
+        </div>
+    </div>
+
+    {% if total_questions > 0 %}
+
+    <!-- Stats -->
+    <p class="section-title">All-time statistics</p>
+    <div class="stats-grid">
+        <div class="stat-card green">
+            <div class="stat-icon">✅</div>
+            <div class="stat-value">{{ user.correct }}</div>
+            <div class="stat-label">Correct</div>
+        </div>
+        <div class="stat-card red">
+            <div class="stat-icon">❌</div>
+            <div class="stat-value">{{ user.incorrect }}</div>
+            <div class="stat-label">Incorrect</div>
+        </div>
+        <div class="stat-card yellow">
+            <div class="stat-icon">⏭️</div>
+            <div class="stat-value">{{ user.skipped }}</div>
+            <div class="stat-label">Skipped</div>
+        </div>
+        <div class="stat-card blue">
+            <div class="stat-icon">⏱️</div>
+            <div class="stat-value">{{ "%.1f"|format(user.avg_time) }}s</div>
+            <div class="stat-label">Avg Time</div>
+        </div>
+        <div class="stat-card cyan">
+            <div class="stat-icon">📝</div>
+            <div class="stat-value">{{ total_questions }}</div>
+            <div class="stat-label">Questions Done</div>
+        </div>
+        <div class="stat-card violet">
+            <div class="stat-icon">🧠</div>
+            <div class="stat-value">{{ user.iq_score }}</div>
+            <div class="stat-label">Total IQ Score</div>
+        </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-section">
+        <h3>Accuracy Breakdown</h3>
+        <div class="progress-bar-wrap">
+            <div class="bar correct-bar"
+                 data-width="{{ (user.correct / total_questions * 100)|round(1) }}">
+                {% if (user.correct / total_questions * 100)|round(1) > 10 %}
+                {{ (user.correct / total_questions * 100)|round(1) }}%
+                {% endif %}
+            </div>
+            <div class="bar incorrect-bar"
+                 data-width="{{ (user.incorrect / total_questions * 100)|round(1) }}">
+                {% if (user.incorrect / total_questions * 100)|round(1) > 10 %}
+                {{ (user.incorrect / total_questions * 100)|round(1) }}%
+                {% endif %}
+            </div>
+            <div class="bar skipped-bar"
+                 data-width="{{ (user.skipped / total_questions * 100)|round(1) }}">
+                {% if (user.skipped / total_questions * 100)|round(1) > 10 %}
+                {{ (user.skipped / total_questions * 100)|round(1) }}%
+                {% endif %}
+            </div>
+        </div>
+        <div class="bar-legend">
+            <div class="legend-item"><div class="dot correct-dot"></div> Correct: {{ user.correct }}</div>
+            <div class="legend-item"><div class="dot incorrect-dot"></div> Incorrect: {{ user.incorrect }}</div>
+            <div class="legend-item"><div class="dot skipped-dot"></div> Skipped: {{ user.skipped }}</div>
+        </div>
+    </div>
+
+    {% else %}
+
+    <!-- Empty state -->
+    <div class="empty-state">
+        <div class="emoji">🧠</div>
+        <h3>No tests taken yet!</h3>
+        <p>Take your first IQ test to see your stats here.</p>
+        <a href="/quiz" class="btn-start">Start First Test →</a>
+    </div>
+
+    {% endif %}
+
+</main>
+
+<script>
+    // Animate progress bars
+    document.querySelectorAll('.bar[data-width]').forEach(function(bar) {
+        const width = parseFloat(bar.getAttribute('data-width'));
+        if (!isNaN(width)) {
+            bar.style.width = '0%';
+            setTimeout(() => { bar.style.width = width + '%'; }, 300);
+        }
+    });
+</script>
+
+</body>
+</html>
