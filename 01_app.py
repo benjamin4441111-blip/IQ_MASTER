@@ -288,7 +288,7 @@ def save_score():
     current_user.skipped += skipped
     current_user.iq_score += iq_score
     current_user.avg_time = avg_time
-    current_user.tests_taken += 1
+    
 
     db.session.commit()
 
@@ -355,7 +355,8 @@ def logout():
 @login_required
 def profile():
     user = current_user
-    avg_iq = round(user.iq_score / user.tests_taken, 1) if (user.tests_taken is not None and user.tests_taken > 0) else 0
+    tests_taken = user.correct + user.incorrect + user.skipped
+    avg_iq = round(user.iq_score / tests_taken, 1) if tests_taken > 0 else 0
     total_questions = user.correct + user.incorrect + user.skipped
     correct_pct = round(user.correct / total_questions * 100, 1) if total_questions else 0
     incorrect_pct = round(user.incorrect / total_questions * 100, 1) if total_questions else 0
