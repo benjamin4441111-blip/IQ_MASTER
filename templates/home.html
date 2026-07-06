@@ -333,11 +333,6 @@
     <!-- Stats -->
     <div class="stats-grid">
         <div class="stat-card">
-            <div class="stat-label">IQ Score</div>
-            <div class="stat-value stat-cyan">{{ user.iq_score if user.iq_score else '—' }}</div>
-            <div class="stat-sub">All time total</div>
-        </div>
-        <div class="stat-card">
             <div class="stat-label">Total Questions attempts</div>
             <div class="stat-value stat-yellow">{{ user.correct + user.incorrect + user.skipped }}</div>
             <div class="stat-sub"></div>
@@ -350,6 +345,11 @@
         <div class="stat-card">
             <div class="stat-label">Total Incorrect</div>
             <div class="stat-value stat-red">{{ user.incorrect if user.incorrect else 0 }}</div>
+            <div class="stat-sub"></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Total Skipped</div>
+            <div class="stat-value stat-blue">{{ user.skipped if user.skipped else 0 }}</div>
             <div class="stat-sub"></div>
         </div>
     </div>
