@@ -356,7 +356,7 @@ def logout():
 def profile():
     user = current_user
     total_questions = user.correct + user.incorrect + user.skipped
-    tests_taken = max(1, round(total_questions / 7))  # Assuming each test has 7 questions
+    tests_taken = max(1, round(total_questions / 20))  # Assuming each test has 20 questions
     avg_iq = round(user.iq_score / tests_taken, 1) if tests_taken > 0 else 0
     
     correct_pct = round(user.correct / total_questions * 100, 1) if total_questions else 0
@@ -399,6 +399,15 @@ def debug_columns():
 @login_required
 def home_inside():
     return render_template("home.html", user=current_user)
+
+
+#============
+#category
+#===========
+@app.route("/category")
+@login_required
+def category():
+    return render_template("category.html")
 
 
 

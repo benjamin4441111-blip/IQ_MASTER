@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IQ Master — Choose Category</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #050818;
+            --surface: rgba(255,255,255,0.04);
+            --border: rgba(255,255,255,0.08);
+            --cyan: #00e5ff;
+            --violet: #7c3aed;
+            --green: #10b981;
+            --yellow: #f59e0b;
+            --text: #e2e8f0;
+            --muted: #64748b;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Space Grotesk', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .bg-grid {
+            position: fixed; inset: 0;
+            background-image:
+                linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            z-index: 0;
+        }
+
+        .bg-glow {
+            position: fixed;
+            width: 500px; height: 500px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.1;
+            z-index: 0;
+        }
+        .bg-glow-1 { background: var(--cyan); top: -100px; left: -100px; }
+        .bg-glow-2 { background: var(--violet); bottom: -100px; right: -100px; }
+
+        /* Navbar */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            padding: 16px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(5,8,24,0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text);
+        }
+        .logo-dot {
+            width: 9px; height: 9px;
+            background: var(--cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--cyan);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.4); }
+        }
+
+        .back-link {
+            text-decoration: none;
+            color: var(--muted);
+            font-size: 0.9rem;
+            padding: 8px 14px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .back-link:hover { color: var(--text); background: var(--surface); }
+
+        /* Main */
+        main {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 100px 24px 60px;
+        }
+
+        .page-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0,229,255,0.1);
+            border: 1px solid rgba(0,229,255,0.2);
+            border-radius: 100px;
+            padding: 6px 16px;
+            font-size: 0.8rem;
+            color: var(--cyan);
+            margin-bottom: 24px;
+            letter-spacing: 0.5px;
+        }
+
+        h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 800;
+            text-align: center;
+            letter-spacing: -1.5px;
+            margin-bottom: 12px;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            text-align: center;
+            font-size: 1rem;
+            margin-bottom: 60px;
+            line-height: 1.6;
+        }
+
+        /* Category cards */
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            width: 100%;
+            max-width: 960px;
+        }
+
+        .category-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 40px 32px;
+            text-decoration: none;
+            color: var(--text);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            display: block;
+        }
+
+        .category-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 0.3s;
+            border-radius: 20px;
+        }
+
+        .category-card.math::before { background: radial-gradient(circle at top left, rgba(59,130,246,0.15), transparent 60%); }
+        .category-card.logical::before { background: radial-gradient(circle at top left, rgba(0,229,255,0.15), transparent 60%); }
+        .category-card.puzzle::before { background: radial-gradient(circle at top left, rgba(124,58,237,0.15), transparent 60%); }
+
+        .category-card:hover::before { opacity: 1; }
+        .category-card:hover { transform: translateY(-6px); }
+        .category-card.math:hover { border-color: rgba(59,130,246,0.4); }
+        .category-card.logical:hover { border-color: rgba(0,229,255,0.4); }
+        .category-card.puzzle:hover { border-color: rgba(124,58,237,0.4); }
+
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .card-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        .card-desc {
+            color: var(--muted);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .card-meta {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .meta-tag {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.78rem;
+            padding: 4px 10px;
+            border-radius: 100px;
+            font-weight: 500;
+        }
+        .math .meta-tag { background: rgba(59,130,246,0.1); color: #60a5fa; }
+        .logical .meta-tag { background: rgba(0,229,255,0.1); color: var(--cyan); }
+        .puzzle .meta-tag { background: rgba(124,58,237,0.1); color: #a78bfa; }
+
+        .card-arrow {
+            position: absolute;
+            bottom: 32px;
+            right: 32px;
+            font-size: 1.2rem;
+            color: var(--muted);
+            transition: all 0.2s;
+        }
+        .category-card:hover .card-arrow { transform: translate(4px, -4px); }
+        .math:hover .card-arrow { color: #60a5fa; }
+        .logical:hover .card-arrow { color: var(--cyan); }
+        .puzzle:hover .card-arrow { color: #a78bfa; }
+
+        /* Bottom note */
+        .bottom-note {
+            margin-top: 48px;
+            color: var(--muted);
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            nav { padding: 14px 16px; }
+            .categories { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-glow bg-glow-1"></div>
+<div class="bg-glow bg-glow-2"></div>
+
+<nav>
+    <a href="/home" class="logo">
+        <div class="logo-dot"></div>
+        IQ MASTER
+    </a>
+    <a href="/home" class="back-link">← Back</a>
+</nav>
+
+<main>
+
+    <div class="page-badge">🧠 Choose your challenge</div>
+
+    <h1>Select a Category</h1>
+    <p class="subtitle">Pick a category to test your intelligence.<br>Each test has 20 questions.</p>
+
+    <div class="categories">
+
+        <!-- Mathematical -->
+        <a href="/quiz?category=mathematical" class="category-card math">
+            <span class="card-icon">🔢</span>
+            <div class="card-title">Mathematical Reasoning</div>
+            <div class="card-desc">Test your number skills with sequences, percentages, algebra and arithmetic problems.</div>
+            <div class="card-meta">
+                <span class="meta-tag">📝 20 Questions</span>
+                <span class="meta-tag">⏱️ ~10 mins</span>
+                <span class="meta-tag">🔥 Medium</span>
+            </div>
+            <div class="card-arrow">↗</div>
+        </a>
+
+        <!-- Logical -->
+        <a href="/quiz?category=logical" class="category-card logical">
+            <span class="card-icon">🧠</span>
+            <div class="card-title">Logical Thinking</div>
+            <div class="card-desc">Sharpen your reasoning with analogies, coding patterns, syllogisms and deductions.</div>
+            <div class="card-meta">
+                <span class="meta-tag">📝 20 Questions</span>
+                <span class="meta-tag">⏱️ ~10 mins</span>
+                <span class="meta-tag">🔥 Hard</span>
+            </div>
+            <div class="card-arrow">↗</div>
+        </a>
+
+        <!-- Puzzle -->
+        <a href="/quiz?category=puzzle" class="category-card puzzle">
+            <span class="card-icon">🧩</span>
+            <div class="card-title">Puzzles & Patterns</div>
+            <div class="card-desc">Crack riddles, visual patterns and brain teasers that challenge your creative thinking.</div>
+            <div class="card-meta">
+                <span class="meta-tag">📝 20 Questions</span>
+                <span class="meta-tag">⏱️ ~10 mins</span>
+                <span class="meta-tag">🔥 Fun</span>
+            </div>
+            <div class="card-arrow">↗</div>
+        </a>
+
+    </div>
+
+    <p class="bottom-note">🏆 Your results will be saved to your profile after completing the test.</p>
+
+</main>
+
+</body>
+</html>
