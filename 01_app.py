@@ -18,10 +18,12 @@ from flask_login import (
 
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
+from authlib.integrations.flask_client import OAuth
 
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your_secret_key_here')
+
 
 database_url = os.environ.get('DATABASE_URL', 'sqlite:///database.db')
 if database_url.startswith("postgres://"):
@@ -32,6 +34,14 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 
 db = SQLAlchemy(app)
+oauth = OAuth(app)
+google = oauth.register(
+    name='google',
+    client_id=os.environ.get('GOOGLE_CLIENT_ID'),
+    client_secret=os.environ.get('GOOGLE_CLIENT_SECRET'),
+    server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
+    client_kwargs={'scope': 'openid email profile'}
+)
 
 
 
@@ -58,6 +68,8 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True)
 
     password = db.Column(db.String(200))
+
+    google_id = db.Column(db.String(200), unique=True, nullable=True)
 
     iq_score = db.Column(db.Integer, default=0)
 
