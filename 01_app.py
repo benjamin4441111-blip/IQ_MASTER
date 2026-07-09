@@ -218,6 +218,47 @@ def login():
     return render_template("login.html")
 
 
+@app.route("/auth/google")
+def google_login():
+    redirect_uri = url_for("google_callback", _external=True)
+    return google.authorize_redirect(redirect_uri)
+
+
+@app.route("/auth/google/callback")
+def google_callback():
+    token = google.authorize_access_token()
+    user_info = token["userinfo"]
+
+    email = user_info["email"]
+    name = user_info.get("name", email.split("@")[0])
+    google_id = user_info.get("sub")
+
+    user = User.query.filter_by(email=email).first()
+
+    if not user:
+        base_username = name.replace(" ", "_").lower()
+        username = base_username
+        counter = 1
+        while User.query.filter_by(username=username).first():
+            username = f"{base_username}{counter}"
+            counter += 1
+
+        user = User(
+            username=username,
+            email=email,
+            password=None,
+            google_id=google_id
+        )
+        db.session.add(user)
+        db.session.commit()
+    elif not user.google_id:
+        user.google_id = google_id
+        db.session.commit()
+
+    login_user(user)
+    return redirect(url_for("home_inside"))
+
+
 
 # =======================
 
