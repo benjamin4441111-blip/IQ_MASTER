@@ -287,13 +287,18 @@ def dashboard():
         2
     )
 
+    # --- NEW: global average IQ score across all users who have taken a test ---
+    avg_result = db.session.query(db.func.avg(User.iq_score)).filter(User.iq_score > 0).scalar()
+    global_avg = round(avg_result, 1) if avg_result else 0
+
     return render_template(
         "dashboard.html",
         correct=correct,
         incorrect=incorrect,
         skipped=skipped,
         accuracy=accuracy,
-        iq_score=recent['iq_score']
+        iq_score=recent['iq_score'],
+        global_avg=global_avg
     )
 
   

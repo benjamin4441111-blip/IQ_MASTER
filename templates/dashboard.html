@@ -91,6 +91,23 @@ body {
     <h1>{{ iq_score }}</h1>
     <p>IQ-like Cognitive Score</p>
 </div>
+!-- GLOBAL AVERAGE COMPARISON -->
+<div class="chart-container" style="text-align:center;">
+    <h3>You vs Global Average</h3>
+ 
+    <div style="display:flex; justify-content:center; gap:40px; margin:20px 0;">
+        <div>
+            <div style="font-size:28px; font-weight:700; color:#38bdf8;">{{ iq_score }}</div>
+            <div style="font-size:13px; color:rgba(255,255,255,0.6);">Your Score</div>
+        </div>
+        <div>
+            <div style="font-size:28px; font-weight:700; color:rgba(255,255,255,0.5);">{{ global_avg }}</div>
+            <div style="font-size:13px; color:rgba(255,255,255,0.6);">Global Average</div>
+        </div>
+    </div>
+ 
+    <p id="compareMsg" style="font-size:15px; font-weight:600;"></p>
+</div>
 
 <!-- STATS -->
 <div class="grid">
@@ -160,6 +177,25 @@ new Chart(document.getElementById('barChart'), {
         }]
     }
 });
+
+const yourScore = iqScoreVar;
+    const globalAvg = Number("{{ global_avg }}");
+    const diff = Math.round(yourScore - globalAvg);
+ 
+    const compareEl = document.getElementById('compareMsg');
+    if (globalAvg === 0) {
+        compareEl.textContent = "Not enough data yet to compare.";
+        compareEl.style.color = "rgba(255,255,255,0.5)";
+    } else if (diff > 0) {
+        compareEl.textContent = `🚀 You're ${diff} points above the global average!`;
+        compareEl.style.color = "#22c55e";
+    } else if (diff < 0) {
+        compareEl.textContent = `📈 You're ${Math.abs(diff)} points below the global average. Keep practicing!`;
+        compareEl.style.color = "#f59e0b";
+    } else {
+        compareEl.textContent = "🎯 You're exactly at the global average!";
+        compareEl.style.color = "#38bdf8";
+    }
 </script>
 
 </body>
