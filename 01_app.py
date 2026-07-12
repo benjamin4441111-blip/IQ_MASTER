@@ -367,19 +367,29 @@ def save_score():
 
 
 @app.route("/leaderboard")
-
 def leaderboard():
 
+    filter_type = request.args.get("filter", "global")
 
-    users = User.query.order_by(
+    query = User.query.filter(User.iq_score > 0)
 
-        User.iq_score.desc()
-    ).all()
+    if filter_type == "country" and current_user.is_authenticated and current_user.country:
+        query = query.filter(User.country == current_user.country)
+
+    users = query.order_by(User.iq_score.desc()).all()
+
+    my_rank = None
+    if current_user.is_authenticated:
+        for idx, u in enumerate(users, start=1):
+            if u.id == current_user.id:
+                my_rank = idx
+                break
 
     return render_template(
-
         "leaderboard.html",
-        users=users
+        users=users,
+        filter_type=filter_type,
+        my_rank=my_rank
     )
 
 

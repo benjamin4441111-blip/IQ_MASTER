@@ -1,42 +1,209 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Leaderboard</title>
-    <link rel="stylesheet"
-          href="{{ url_for('static',
-          filename='css/style.css') }}">
+    <title>Leaderboard - IQ Master</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .lb-wrap {
+            max-width: 700px;
+            margin: 0 auto;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .lb-tabs {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0 25px;
+        }
+
+        .lb-tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.15);
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .lb-tab.active {
+            background: linear-gradient(135deg, #3b82f6, #06b6d4);
+            color: white;
+            border-color: transparent;
+        }
+
+        .lb-tab:not(.active):hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .my-rank-card {
+            position: sticky;
+            top: 10px;
+            z-index: 10;
+            background: rgba(6, 182, 212, 0.12);
+            border: 1px solid rgba(6, 182, 212, 0.4);
+            border-radius: 10px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            cursor: pointer;
+            backdrop-filter: blur(6px);
+        }
+
+        .my-rank-card:hover {
+            background: rgba(6, 182, 212, 0.2);
+        }
+
+        .my-rank-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #e5f6ff;
+        }
+
+        .my-rank-badge {
+            font-weight: 700;
+            font-size: 16px;
+            color: #06b6d4;
+        }
+
+        .lb-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 60vh;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .lb-row {
+            display: grid;
+            grid-template-columns: 40px 1fr 70px;
+            align-items: center;
+            padding: 10px 14px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: background 0.3s ease;
+        }
+
+        .lb-row.me {
+            border-color: #06b6d4;
+            background: rgba(6,182,212,0.15);
+        }
+
+        .lb-row.highlight {
+            animation: glowPulse 1.4s ease;
+        }
+
+        @keyframes glowPulse {
+            0% { box-shadow: 0 0 0px rgba(6,182,212,0.8); }
+            50% { box-shadow: 0 0 20px rgba(6,182,212,0.8); }
+            100% { box-shadow: 0 0 0px rgba(6,182,212,0); }
+        }
+
+        .lb-rank {
+            font-weight: 700;
+            color: rgba(255,255,255,0.6);
+        }
+
+        .lb-row.top1 { background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,215,0,0.03)); border-color: rgba(255,215,0,0.4); }
+        .lb-row.top2 { background: linear-gradient(135deg, rgba(200,200,200,0.15), rgba(200,200,200,0.03)); border-color: rgba(200,200,200,0.4); }
+        .lb-row.top3 { background: linear-gradient(135deg, rgba(205,127,50,0.15), rgba(205,127,50,0.03)); border-color: rgba(205,127,50,0.4); }
+
+        .lb-row.top1 .lb-rank::before { content: "🥇 "; }
+        .lb-row.top2 .lb-rank::before { content: "🥈 "; }
+        .lb-row.top3 .lb-rank::before { content: "🥉 "; }
+
+        .lb-user {
+            font-size: 15px;
+            color: white;
+        }
+
+        .lb-score {
+            text-align: right;
+            font-weight: 700;
+            color: #06b6d4;
+        }
+
+        .empty-msg {
+            text-align: center;
+            color: rgba(255,255,255,0.5);
+            padding: 30px 0;
+        }
+    </style>
 </head>
 <body>
 
 <div class="hero">
+    <div class="glass-card lb-wrap">
 
-<div class="glass-card">
+        <h1>🏆 Leaderboard</h1>
 
-<h1>🏆 Leaderboard</h1>
+        <div class="lb-tabs">
+            <a href="{{ url_for('leaderboard', filter='global') }}"
+               class="lb-tab {% if filter_type == 'global' %}active{% endif %}">
+                🌍 Global
+            </a>
+            <a href="{{ url_for('leaderboard', filter='country') }}"
+               class="lb-tab {% if filter_type == 'country' %}active{% endif %}">
+                📍 My Country
+            </a>
+        </div>
 
-<table style="width:100%;
-              margin-top:30px;
-              color:white;">
+        {% if my_rank %}
+        <div class="my-rank-card" onclick="findMyRank()">
+            <div class="my-rank-left">
+                🎯 Your Rank
+            </div>
+            <div class="my-rank-badge">#{{ my_rank }}</div>
+        </div>
+        {% endif %}
 
-<tr>
-<th>Rank</th>
-<th>User</th>
-<th>IQ</th>
-</tr>
+        <div class="lb-list" id="lbList">
+            {% if users %}
+                {% for user in users %}
+                <div class="lb-row
+                    {% if loop.index == 1 %}top1{% elif loop.index == 2 %}top2{% elif loop.index == 3 %}top3{% endif %}
+                    {% if current_user.is_authenticated and user.id == current_user.id %}me{% endif %}"
+                    id="row-{{ loop.index }}">
+                    <div class="lb-rank">{{ loop.index }}</div>
+                    <div class="lb-user">{{ user.username }}</div>
+                    <div class="lb-score">{{ user.iq_score }}</div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p class="empty-msg">No scores yet in this view. Be the first!</p>
+            {% endif %}
+        </div>
 
-{% for user in users %}
-<tr>
-<td>{{ loop.index }}</td>
-<td>{{ user.username }}</td>
-<td>{{ user.iq_score }}</td>
-</tr>
-{% endfor %}
-
-</table>
-
+    </div>
 </div>
 
-</div>
+<script>
+function findMyRank() {
+    const myRank = {{ my_rank|default('null') }};
+    if (myRank === null) return;
+
+    const row = document.getElementById("row-" + myRank);
+    if (row) {
+        row.scrollIntoView({ behavior: "smooth", block: "center" });
+        row.classList.add("highlight");
+        setTimeout(() => row.classList.remove("highlight"), 1400);
+    }
+}
+</script>
 
 </body>
 </html>
