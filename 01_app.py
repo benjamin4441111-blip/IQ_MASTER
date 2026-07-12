@@ -381,18 +381,34 @@ def leaderboard():
     if filter_type == "country" and current_user.is_authenticated and current_user.country:
         query = query.filter(User.country == current_user.country)
 
-    users = query.order_by(User.iq_score.desc()).all()
+    all_users = query.all()
+
+    # Calculate true average IQ per user, same formula as profile page
+    ranked_users = []
+    for user in all_users:
+        total_questions = user.correct + user.incorrect + user.skipped
+        tests_taken = max(1, round(total_questions / 20))  # assuming 20 questions per test
+        avg_iq = round(user.iq_score / tests_taken, 1) if tests_taken > 0 else 0
+
+        ranked_users.append({
+            "id": user.id,
+            "username": user.username,
+            "avg_iq": avg_iq
+        })
+
+    # Sort by true average IQ, descending
+    ranked_users.sort(key=lambda u: u["avg_iq"], reverse=True)
 
     my_rank = None
     if current_user.is_authenticated:
-        for idx, u in enumerate(users, start=1):
-            if u.id == current_user.id:
+        for idx, u in enumerate(ranked_users, start=1):
+            if u["id"] == current_user.id:
                 my_rank = idx
                 break
 
     return render_template(
         "leaderboard.html",
-        users=users,
+        users=ranked_users,
         filter_type=filter_type,
         my_rank=my_rank
     )
